@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="appTitle">ISPSC - Intelligent System for Prediction Suitable Crops</title>
+
+    <!-- Tailwind CSS and Configuration (Enhanced) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Custom Tailwind Configuration for Enhanced Aesthetics
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        // Using Cairo for Arabic and Inter for English
+                        sans: ['Inter', 'Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        // Enhanced Colors for Cheerfulness and Project Theme
+                        'primary': '#059669', // Emerald 600 - Main Action Color
+                        'secondary': '#38bdf8', // Sky 400 - Accent/Data Color
+                        'primary-dark': '#047857', // Darker Emerald
+                        'accent': '#fbbf24', // Amber 400 - Highlight
+                        'bg-light': '#f0fdf4', // Emerald 50 - Light background
+                        'card-bg': '#ffffff', // Card background
+                        'bot-bubble': '#ecfdf5', // Lightest Teal for bot messages
+                        'user-bubble': '#eff6ff', // Lightest Blue for user messages
+                    },
+                    // Adding simple animation utility
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS for Theme and Enhanced Aesthetics (More complex shadows and gradients) -->
+    <style>
+        /* CSS Variables for Light/Dark Mode */
+        :root {
+            --primary: #059669;
+            --secondary: #38bdf8;
+            --bg: #f8fafc; /* Lighter background for better contrast */
+            --text: #1f2937;
+            --card-bg: #ffffff;
+            --input-bg: #f8fafc; 
+            --border-color: #d1d5db;
+        }
+
+        /* MODIFICATION 5: Dark mode is now darker (black) */
+        [data-theme="dark"] {
+            --primary: #34d399; 
+            --secondary: #7dd3fc;
+            --bg: #000000; /* Dark background -> Black */
+            --text: #f3f4f6;
+            --card-bg: #111111; /* Darker card background -> Very dark gray */
+            --input-bg: #222222; /* Darker input background */
+            --border-color: #333333; /* Darker border */
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out;
+            min-height: 100vh;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            color: var(--text);
+            /* Complex, gentle shadow for 3D depth */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        /* Header Gradient (More vibrant) */
+        .header-gradient {
+            background: linear-gradient(90deg, #10b981, #06b6d4); /* Emerald to Cyan blend */
+        }
+
+        [data-theme="dark"] .header-gradient {
+            background: linear-gradient(90deg, #059669, #0284c7);
+        }
+        
+        /* Input and Select Styling */
+        .form-input {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text);
+            transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.2); 
+        }
+        
+        /* Enhanced Button Hover Effect */
+        .btn-primary { transition: all 0.3s ease; }
+        .btn-primary:hover {
+            box-shadow: 0 6px 10px -1px rgba(5, 150, 105, 0.4);
+            transform: translateY(-3px);
+        }
+        .btn-secondary { transition: all 0.3s ease; }
+        .btn-secondary:hover {
+            box-shadow: 0 6px 10px -1px rgba(56, 189, 248, 0.4);
+            transform: translateY(-3px);
+        }
+
+        /* Helper class for icon toggling */
+        .icon-hidden {
+            display: none;
+        }
+    </style>
+
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen flex flex-col font-sans transition-colors duration-400">
+    
+    <!-- HEADER - MODIFICATION 2: Restructured Header -->
+    <header class="header-gradient shadow-lg p-4 flex justify-between items-center sticky top-0 z-10 transition-all duration-300">
+        
+        <!-- LEFT GROUP (Back Button) -->
+        <div class="flex-1 flex justify-start">
+            <button id="backButton" class="text-white hover:bg-white/20 p-2 rounded-full transition duration-300 hidden focus:outline-none" aria-label="Back">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- CENTER GROUP (Title) -->
+        <div class="flex-shrink-0 flex flex-col items-center justify-center min-w-0">
+            <p class="text-sm font-light text-white/90 mb-0.5 whitespace-nowrap overflow-hidden text-ellipsis px-4" data-translate-key="fullName">Intelligent System for Prediction Suitable Crops</p>
+            <h1 class="text-3xl font-extrabold text-accent transition-colors duration-500 hover:scale-105" data-translate-key="appTitleShort">ISPSC</h1>
+        </div>
+
+        <!-- RIGHT GROUP (Buttons) -->
+        <div class="flex-1 flex items-center justify-end space-x-2 rtl:space-x-reverse pl-2">
+            <!-- Language Toggle Button -->
+            <button id="langToggleButton" class="text-white bg-secondary px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-sky-500 transition duration-300 focus:outline-none">
+                <span data-translate-key="langButton">العربية</span>
+            </button>
+            
+            <!-- Theme Toggle Button -->
+            <button id="themeToggle" class="text-white bg-secondary w-10 h-8 rounded-full text-sm font-semibold hover:bg-sky-500 transition duration-300 focus:outline-none flex items-center justify-center">
+                <i class="fas fa-sun" data-theme-icon-light></i>
+                <i class="fas fa-moon icon-hidden" data-theme-icon-dark></i>
+            </button>
+
+            <!-- Login/Logout Buttons -->
+            <button id="loginButton" class="text-white bg-primary px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-primary-dark transition duration-300 focus:outline-none">
+                <span data-translate-key="login">Login</span>
+            </button>
+            <button id="logoutButton" class="text-white bg-red-500 px-3 py-1.5 rounded-full text-sm font-semibold hover:bg-red-600 transition duration-300 focus:outline-none hidden">
+                <span data-translate-key="logout">Logout</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow p-4 md:p-8 flex justify-center items-start">
+        
+        <!-- ======================================================= -->
+        <!-- 1. Landing View -->
+        <!-- ======================================================= -->
+        <div id="landingView" data-view-id="landingView" class="w-full max-w-lg card p-8 md:p-12 rounded-2xl animate-fade-in">
+            <h2 class="text-4xl font-extrabold text-primary text-center mb-10" data-translate-key="welcomeTitle">Welcome to ISPSC</h2>
+            
+            <!-- MODIFICATION 1: Deleted the welcomeSubtitle <p> tag -->
+            
+            <div class="space-y-6">
+                <!-- Recommendations Button -->
+                <button onclick="navigateTo('recommendationView')" class="btn-primary w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg hover:bg-primary-dark transition duration-300 flex items-center justify-center space-x-3 rtl:space-x-reverse text-lg">
+                    <i class="fas fa-seedling text-2xl"></i>
+                    <span data-translate-key="recommendationViewTitle">Crop Recommendation</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ======================================================= -->
+        <!-- 2. Recommendation View (with 6 inputs) -->
+        <!-- ======================================================= -->
+        <div id="recommendationView" data-view-id="recommendationView" class="hidden w-full max-w-7xl grid grid-cols-1 lg:grid-cols-3 gap-8 animate-fade-in">
+            <!-- Left Panel: Inputs and Results -->
+            <div class="lg:col-span-2 card p-8 rounded-2xl space-y-8">
+                <h2 class="text-3xl font-extrabold text-primary border-b-4 border-primary/20 pb-4 mb-4" data-translate-key="recommendationViewTitle">Advanced Crop Recommendation</h2>
+
+                <!-- Input Form (6 Fields) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Field 1: Governorate Select -->
+                    <div>
+                        <label for="govSelect" class="block text-sm font-medium mb-2" data-translate-key="governorateLabel">Governorate</label>
+                        <select id="govSelect" class="w-full p-3 rounded-xl form-input">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+
+                    <!-- Field 2: Planting Month Select -->
+                    <div>
+                        <label for="monthSelect" class="block text-sm font-medium mb-2" data-translate-key="monthLabel">Planting Month</label>
+                        <select id="monthSelect" class="w-full p-3 rounded-xl form-input">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+
+                    <!-- Field 3: Area Input -->
+                    <div>
+                        <label for="feddanInput" class="block text-sm font-medium mb-2" data-translate-key="areaLabel">Area (Feddan)</label>
+                        <input type="number" id="feddanInput" min="1" value="1" class="w-full p-3 rounded-xl form-input">
+                    </div>
+                    
+                    <!-- Field 4: Land Type Select (NEW) -->
+                    <div>
+                        <label for="landTypeSelect" class="block text-sm font-medium mb-2" data-translate-key="landTypeLabel">Land Type</label>
+                        <select id="landTypeSelect" class="w-full p-3 rounded-xl form-input">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+
+                    <!-- Field 5: Irrigation Method Select (NEW) -->
+                    <div>
+                        <label for="irrigationSelect" class="block text-sm font-medium mb-2" data-translate-key="irrigationLabel">Irrigation Method</label>
+                        <select id="irrigationSelect" class="w-full p-3 rounded-xl form-input">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+
+                    <!-- Field 6: Crop Category Select (NEW) -->
+                    <div>
+                        <label for="categorySelect" class="block text-sm font-medium mb-2" data-translate-key="categoryLabel">Crop Category</label>
+                        <select id="categorySelect" class="w-full p-3 rounded-xl form-input">
+                            <!-- Options populated by JS -->
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="pt-6 space-y-4">
+                    <!-- MODIFIED: Title text changed -->
+                    <h3 class="text-2xl font-bold text-secondary border-b border-secondary/30 pb-2" data-translate-key="recommendationResultTitle">Top Recommendations:</h3>
+                    
+                    <!-- Recommendation Display -->
+                    <div id="recommendationResult" class="min-h-[180px] p-6 bg-bg-light dark:bg-gray-900 border border-primary/30 rounded-xl transition duration-300 shadow-inner">
+                        <p class="text-gray-500 dark:text-gray-400" data-translate-key="initialPrompt">Fill out the 6 fields above to get personalized crop recommendations.</p>
+                    </div>
+
+                    <!-- Error/Message Box -->
+                    <div id="errorBox" class="p-3 text-sm rounded-xl bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 opacity-0 transition-opacity duration-300 hidden">
+                        <!-- Error Message will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Chatbot Interface -->
+            <div class="lg:col-span-1 card flex flex-col rounded-2xl overflow-hidden h-[80vh] max-h-[700px]">
+                <div class="bg-secondary p-4 text-white font-bold text-center text-lg shadow-md" data-translate-key="chatTitle">Agricultural Chatbot</div>
+                
+                <!-- Chat Messages Area -->
+                <div id="chatMessages" class="flex-grow p-4 space-y-4 overflow-y-auto bg-gray-50/50 dark:bg-gray-800/50">
+                    <!-- Initial Bot Message -->
+                    <div class="flex justify-start">
+                        <div class="max-w-xs p-3 rounded-xl rounded-tl-none bg-bot-bubble dark:bg-gray-600 shadow-sm text-gray-800 dark:text-gray-100 text-sm">
+                            <span data-translate-key="chatWelcome">Hello! I am your advanced agricultural assistant. I can help you with crop information, best practices, and follow-up questions about your 6 inputs.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat Input Area -->
+                <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-card-bg flex space-x-2 rtl:space-x-reverse">
+                    <input type="text" id="chatInput" 
+                           class="flex-grow p-3 rounded-xl form-input"
+                           data-translate-key="chatPlaceholder" disabled>
+                    <button id="chatSendBtn" 
+                            class="bg-primary text-white p-3 rounded-xl hover:bg-primary-dark transition duration-200 disabled:opacity-50"
+                            disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ======================================================= -->
+        <!-- 5. NEW: Login View -->
+        <!-- ======================================================= -->
+        <div id="loginView" data-view-id="loginView" class="hidden w-full max-w-md card p-8 md:p-10 rounded-2xl animate-fade-in">
+            <h2 class="text-3xl font-extrabold text-primary text-center mb-8" data-translate-key="loginTitle">Login to ISPSC</h2>
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label for="emailInput" class="block text-sm font-medium mb-2" data-translate-key="emailLabel">Email Address</label>
+                    <input type="email" id="emailInput" class="w-full p-3 border rounded-xl form-input" required>
+                </div>
+                <div>
+                    <label for="passwordInput" class="block text-sm font-medium mb-2" data-translate-key="passwordLabel">Password</label>
+                    <input type="password" id="passwordInput" class="w-full p-3 border rounded-xl form-input" required>
+                </div>
+                
+                <!-- Login Error Message -->
+                <div id="loginErrorBox" class="p-3 text-sm rounded-xl bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 hidden">
+                    <!-- Error Message will be inserted here -->
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <a href="#" class="text-sm text-primary hover:underline" data-translate-key="forgotPassword">Forgot password?</a>
+                </div>
+                
+                <button type="submit" id="loginFormButton" class="btn-primary w-full bg-primary text-white font-bold py-3 rounded-xl shadow-lg hover:bg-primary-dark transition duration-300 text-lg">
+                    <span data-translate-key="login">Login</span>
+                </button>
+                
+                <p class="text-sm text-center">
+                    <span data-translate-key="noAccount">Don't have an account?</span>
+                    <a href="#" class="text-primary hover:underline font-medium" data-translate-key="signUp">Sign up</a>
+                </p>
+            </form>
+        </div>
+
+    </main>
+
+    <!-- FOOTER (Enhanced with Developer Contact) -->
+    <!-- MODIFICATION: Footer updated for dark mode and new layout -->
+    <footer class="p-4 text-sm mt-auto border-t shadow-md" style="background-color: var(--card-bg); color: var(--text); border-top-color: var(--border-color);">
+        <div class="max-w-7xl mx-auto">
+            <!-- Top part with copyright -->
+            <div class="text-center mb-4">
+                <p data-translate-key="footerText">© 2025 Crop Prediction System - All rights reserved</p>
+            </div>
+            
+            <!-- Bottom part with names -->
+            <div class="w-full pt-4 border-t text-sm flex justify-between items-center" style="border-top-color: var(--border-color);">
+                <!-- Left Name -->
+                <div class="text-left">
+                    <p>
+                        <a href="mailto:o1m2a3r4adorrm@gmail.com" class="hover:underline" style="color: var(--secondary);" title="Email Omar">
+                            Omar Ahmed Ismael Fadel
+                        </a>
+                    </p>
+                </div>
+                <!-- Right Name -->
+                <div class="text-right">
+                    <p>
+                        <a href="mailto:ahmdalnhrawy306@gmail.com" class="hover:underline" style="color: var(--secondary);" title="Email Mohamed">
+                            Mohamed Tamer Barakat Mohamed
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // --- Global Variables ---
+        let currentLang = localStorage.getItem('language') || (navigator.language.startsWith('ar') ? 'ar' : 'en');
+        let currentView = 'landingView';
+        let viewHistory = ['landingView']; 
+        let isLoggedIn = false; // NEW: Login state
+
+        // --- Element Selectors ---
+        const govSelect = document.getElementById('govSelect');
+        const monthSelect = document.getElementById('monthSelect');
+        const feddanInput = document.getElementById('feddanInput');
+        const landTypeSelect = document.getElementById('landTypeSelect');
+        const irrigationSelect = document.getElementById('irrigationSelect');
+        const categorySelect = document.getElementById('categorySelect');
+        
+        const recommendationResult = document.getElementById('recommendationResult');
+        const errorBox = document.getElementById('errorBox');
+        const langToggleButton = document.getElementById('langToggleButton'); 
+        const backButton = document.getElementById('backButton'); 
+
+        // Chatbot
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const chatSendBtn = document.getElementById('chatSendBtn');
+
+        // NEW: Theme and Login
+        const themeToggle = document.getElementById('themeToggle');
+        const loginButton = document.getElementById('loginButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const loginForm = document.getElementById('loginForm');
+        const loginErrorBox = document.getElementById('loginErrorBox');
+        const emailInput = document.getElementById('emailInput');
+        const passwordInput = document.getElementById('passwordInput');
+
+        const apiKey = ""; 
+
+        // --- Translation Data (CLEANED + NEW) ---
+        const translations = {
+            en: {
+                fullName: "Intelligent System for Prediction Suitable Crops", 
+                appTitleShort: "ISPSC", 
+                appTitle: "ISPSC - Intelligent System for Prediction Suitable Crops",
+                langButton: "العربية",
+                // Labels for 6 inputs
+                governorateLabel: "Governorate",
+                monthLabel: "Planting Month",
+                areaLabel: "Area (Feddan)",
+                landTypeLabel: "Land Type",
+                irrigationLabel: "Irrigation Method",
+                categoryLabel: "Crop Category",
+                // Select prompts
+                selectGov: "Select Governorate",
+                selectMonth: "Select Month",
+                selectLand: "Select Land Type",
+                selectIrrigation: "Select Irrigation Method",
+                selectCategory: "Select Crop Category",
+                // Recommendation View
+                recommendationViewTitle: "Advanced Crop Recommendation", 
+                recommendationResultTitle: "Top Recommendations:", // MODIFIED
+                initialPrompt: "Fill out the 6 fields above to get personalized crop recommendations.",
+                suitable: "Suitable",
+                totalYield: "Total Expected Yield",
+                irrigationFreq: "Irrigation Frequency",
+                plantingTime: "Best Planting Time",
+                harvestTime: "Best Harvest Time",
+                // Chatbot
+                chatTitle: "Agricultural Chatbot",
+                chatWelcome: "Hello! I am your advanced agricultural assistant. I can help you with crop information, best practices, and follow-up questions about your 6 inputs.",
+                chatPlaceholder: "Ask a question about crops, land, or the site...",
+                // Error Messages
+                errorGov: "Please select a valid governorate.",
+                errorMonth: "Please select a valid planting month.",
+                errorArea: "Please enter a valid area (must be > 0).",
+                errorLand: "Please select a valid land type.",
+                errorIrrigation: "Please select a valid irrigation method.",
+                errorCategory: "Please select a valid crop category.",
+                // Dashboards/Landing
+                welcomeTitle: "Welcome to ISPSC",
+                welcomeSubtitle: "Select your role to proceed.", // This key is no longer used in HTML
+                back: "Back",
+                // Footer
+                footerText: "© 2025 Crop Prediction System - All rights reserved",
+                contactFeedback: "Contact/Feedback", // MODIFICATION 3
+                hideInfo: "Hide Info", // MODIFICATION 3
+                // NEW: Login/Auth
+                login: "Login",
+                logout: "Logout",
+                loginTitle: "Login to ISPSC",
+                emailLabel: "Email Address",
+                passwordLabel: "Password",
+                forgotPassword: "Forgot password?",
+                noAccount: "Don't have an account?",
+                signUp: "Sign up",
+                loginError: "Please enter both email and password."
+            },
+            ar: {
+                fullName: "النظام الذكي للتنبؤ بالمحاصيل المناسبة",
+                appTitleShort: "ISPSC", 
+                appTitle: "النظام الذكي للتنبؤ بالمحاصيل - ISPSC",
+                langButton: "English",
+                // Labels for 6 inputs
+                governorateLabel: "المحافظة",
+                monthLabel: "شهر الزراعة",
+                areaLabel: "المساحة (فدان)",
+                landTypeLabel: "نوع الأرض",
+                irrigationLabel: "طريقة الري",
+                categoryLabel: "فئة المحصول المطلوبة",
+                 // Select prompts
+                selectGov: "اختر المحافظة",
+                selectMonth: "اختر الشهر",
+                selectLand: "اختر نوع الأرض",
+                selectIrrigation: "اختر طريقة الري",
+                selectCategory: "اختر فئة المحصول",
+                // Recommendation View
+                recommendationViewTitle: "توصيات المحاصيل المتقدمة", 
+                recommendationResultTitle: "أهم التوصيات:", // MODIFIED
+                initialPrompt: "املأ الحقول الستة أعلاه للحصول على توصيات المحاصيل المخصصة.",
+                suitable: "مناسبة",
+                totalYield: "إجمالي الإنتاج المتوقع",
+                irrigationFreq: "عدد مرات الري",
+                plantingTime: "أفضل وقت للزراعة",
+                harvestTime: "أفضل وقت للحصاد",
+                // Chatbot
+                chatTitle: "روبوت الدرشة الزراعي",
+                chatWelcome: "مرحباً! أنا مساعدك الزراعي المتقدم. يمكنني مساعدتك بمعلومات المحاصيل وأفضل الممارسات وأسئلة المتابعة حول مدخلاتك الستة.",
+                chatPlaceholder: "اطرح سؤالك حول المحاصيل، الأرض، أو الموقع...",
+                // Error Messages
+                errorGov: "يرجى تحديد محافظة صالحة.",
+                errorMonth: "يرجى تحديد شهر زراعة صالح.",
+                errorArea: "يرجى إدخال مساحة صالحة (يجب أن تكون أكبر من 0).",
+                errorLand: "يرجى تحديد نوع أرض صالح.",
+                errorIrrigation: "يرجى تحديد طريقة ري صالحة.",
+                errorCategory: "يرجى تحديد فئة محصول صالحة.",
+                // Dashboards/Landing
+                welcomeTitle: "مرحباً بكم في ISPSC",
+                welcomeSubtitle: "اختر دورك للمتابعة.", // This key is no longer used in HTML
+                back: "عودة",
+                // Footer
+                footerText: "© 2025 نظام التنبؤ بالمحاصيل - جميع الحقوق محفوظة",
+                contactFeedback: "للتواصل / الملاحظات", // MODIFICATION 3
+                hideInfo: "إخفاء المعلومات", // MODIFICATION 3
+                // NEW: Login/Auth
+                login: "تسجيل الدخول",
+                logout: "تسجيل الخروج",
+                loginTitle: "تسجيل الدخول إلى ISPSC",
+                emailLabel: "البريد الإلكتروني",
+                passwordLabel: "كلمة المرور",
+                forgotPassword: "هل نسيت كلمة المرور؟",
+                noAccount: "ليس لديك حساب؟",
+                signUp: "إنشاء حساب",
+                loginError: "يرجى إدخال البريد الإلكتروني وكلمة المرور."
+            }
+        };
+
+        // --- Data for Select Fields (EXPANDED and structured for i18n) ---
+        const data = {
+            governorates: [
+                { en: "Cairo", ar: "القاهرة" },
+                { en: "Giza", ar: "الجيزة" },
+                { en: "Alexandria", ar: "الإسكندرية" },
+                { en: "Dakahlia", ar: "الدقهلية" },
+                { en: "Red Sea", ar: "البحر الأحمر" },
+                { en: "Beheira", ar: "البحيرة" },
+                { en: "Fayoum", ar: "الفيوم" },
+                { en: "Gharbia", ar: "الغربية" },
+                { en: "Ismailia", ar: "الإسماعيلية" },
+                { en: "Menofia", ar: "المنوفية" },
+                { en: "Minya", ar: "المنيا" },
+                { en: "Qalyubia", ar: "القليوبية" },
+                { en: "New Valley", ar: "الوادي الجديد" },
+                { en: "Suez", ar: "السويس" },
+                { en: "Aswan", ar: "أسوان" },
+                { en: "Assiut", ar: "أسيوط" },
+                { en: "Beni Suef", ar: "بني سويف" },
+                { en: "Port Said", ar: "بورسعيد" },
+                { en: "Damietta", ar: "دمياط" },
+                { en: "Sharqia", ar: "الشرقية" },
+                { en: "Sohag", ar: "سوهاج" },
+                { en: "Kafr El Sheikh", ar: "كفر الشيخ" },
+                { en: "Matrouh", ar: "مطروح" },
+                { en: "Luxor", ar: "الأقصر" },
+                { en: "Qena", ar: "قنا" },
+                { en: "North Sinai", ar: "شمال سيناء" },
+                { en: "South Sinai", ar: "جنوب سيناء" }
+            ],
+            months: [
+                { en: "January", ar: "يناير" }, { en: "February", ar: "فبراير" },
+                { en: "March", ar: "مارس" }, { en: "April", ar: "أبريل" },
+                { en: "May", ar: "مايو" }, { en: "June", ar: "يونيو" },
+                { en: "July", ar: "يوليو" }, { en: "August", ar: "أغسطس" },
+                { en: "September", ar: "سبتمبر" }, { en: "October", ar: "أكتوبر" },
+                { en: "November", ar: "نوفمبر" }, { en: "December", ar: "ديسمبر" }
+            ],
+            landTypes: [
+                { en: "Recently Reclaimed", ar: "استصلاحية حديثة" },
+                { en: "Old Agricultural", ar: "زراعية قديمة" }
+            ],
+            irrigationMethods: [
+                { en: "Drip Irrigation", ar: "تنقيط" },
+                { en: "Flood Irrigation", ar: "غمر" },
+                { en: "Rain-fed", ar: "الأمطار" }
+            ],
+            cropCategories: [
+                { en: "Staple Crops", ar: "محاصيل غذاء أساسية" },
+                { en: "Vegetables", ar: "الخضروات" },
+                { en: "Fruits", ar: "الفواكه" },
+                { en: "Legumes", ar: "البقوليات" },
+                { en: "Oil Crops", ar: "المحاصيل الزيتية" },
+                { en: "Sugar Crops", ar: "المحاصيل السكرية" },
+                { en: "Forage Crops", ar: "الأعلاف" },
+                { en: "Medicinal & Aromatic Plants", ar: "المحاصيل الطبية والعطرية" },
+                { en: "Fiber / Industrial Crops", ar: "المحاصيل الليفية – الصناعية" },
+                { en: "Ornamental Plants", ar: "نباتات الزينة" }
+            ],
+            
+            // --- NEW DATA START ---
+
+            // This is the new data for the 14 crops provided by the user.
+            newStapleCropsData: [
+                { 
+                    en: "Wheat", ar: "القمح", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 18, yieldUnitEn: "Ardab", yieldUnitAr: "إردب", // Avg of 10 and 26
+                    irrigationCountEn: "5-7 times", irrigationCountAr: "5-7 مرات", irrigationNumeric: 6,
+                    plantingTimeEn: "Mid Nov - End Dec", plantingTimeAr: "منتصف نوفمبر - نهاية ديسمبر",
+                    harvestTimeEn: "End Apr - End May", harvestTimeAr: "أواخر أبريل - نهاية مايو"
+                },
+                { 
+                    en: "Rice", ar: "الأرز", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 3.75, yieldUnitEn: "Ton", yieldUnitAr: "طن", // Avg of 2.5 and 5
+                    irrigationCountEn: "Continuous Flood", irrigationCountAr: "غمر مستمر", irrigationNumeric: 30, 
+                    plantingTimeEn: "End Apr - Mid May", plantingTimeAr: "أواخر أبريل - منتصف مايو",
+                    harvestTimeEn: "September", harvestTimeAr: "سبتمبر"
+                },
+                { 
+                    en: "Maize", ar: "الذرة الشامية", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 2.75, yieldUnitEn: "Ton", yieldUnitAr: "طن", // Avg of 1.5 and 4
+                    irrigationCountEn: "8-10 times", irrigationCountAr: "8-10 ريات", irrigationNumeric: 9,
+                    plantingTimeEn: "Mid May - End Jun", plantingTimeAr: "منتصف مايو - نهاية يونيو",
+                    harvestTimeEn: "Sep - Oct", harvestTimeAr: "سبتمبر - أكتوبر"
+                },
+                { 
+                    en: "Sorghum", ar: "الذرة الرفيعة", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 1.1, yieldUnitEn: "Ton", yieldUnitAr: "طن", // Avg of 0.7 and 1.5
+                    irrigationCountEn: "6-8 times", irrigationCountAr: "6-8 ريات", irrigationNumeric: 7,
+                    plantingTimeEn: "May - Jul", plantingTimeAr: "مايو - يوليو",
+                    harvestTimeEn: "Sep - Oct", harvestTimeAr: "سبتمبر - أكتوبر"
+                },
+                { 
+                    en: "Barley", ar: "الشعير", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 14, yieldUnitEn: "Ardab", yieldUnitAr: "أردب", // Avg of 8 and 20
+                    irrigationCountEn: "3-4 times", irrigationCountAr: "3-4 ريات", irrigationNumeric: 4, 
+                    plantingTimeEn: "Nov - Dec", plantingTimeAr: "نوفمبر - ديسمبر",
+                    harvestTimeEn: "April", harvestTimeAr: "أبريل"
+                },
+                { 
+                    en: "Millet", ar: "الدخن", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 0.85, yieldUnitEn: "Ton", yieldUnitAr: "طن", // Avg of 0.5 and 1.2
+                    irrigationCountEn: "4-6 times", irrigationCountAr: "4-6 ريات", irrigationNumeric: 5,
+                    plantingTimeEn: "May - Jun", plantingTimeAr: "مايو - يونيو",
+                    harvestTimeEn: "Aug - Sep", harvestTimeAr: "أغسطس - سبتمبر"
+                },
+                { 
+                    en: "Potato", ar: "البطاطس", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 11.5, yieldUnitEn: "Ton", yieldUnitAr: "طن", // Avg of 7 and 16
+                    irrigationCountEn: "12-15 times", irrigationCountAr: "12-15 رية", irrigationNumeric: 14,
+                    plantingTimeEn: "Jan / Sep / Nov", plantingTimeAr: "يناير / سبتمبر / نوفمبر",
+                    harvestTimeEn: "80-120 days", harvestTimeAr: "80-120 يوم"
+                },
+                { 
+                    en: "Sweet Potato", ar: "البطاطا", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 13, yieldUnitEn: "Ton", yieldUnitAr: "طن", // Avg of 8 and 18
+                    irrigationCountEn: "8-10 times", irrigationCountAr: "8-10 ريات", irrigationNumeric: 9,
+                    plantingTimeEn: "Apr - May", plantingTimeAr: "أبريل - مايو",
+                    harvestTimeEn: "September", harvestTimeAr: "سبتمبر"
+                },
+                { 
+                    en: "Taro", ar: "القلقاس", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 9, yieldUnitEn: "Ton", yieldUnitAr: "طن", // Avg of 6 and 12
+                    irrigationCountEn: "Frequent (like rice)", irrigationCountAr: "كثيف (مثل الأرز)", irrigationNumeric: 28,
+                    plantingTimeEn: "Mar - Apr", plantingTimeAr: "مارس - أبريل",
+                    harvestTimeEn: "Oct - Nov", harvestTimeAr: "أكتوبر - نوفمبر"
+                },
+                { 
+                    en: "Table Beet", ar: "بنجر المائدة", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 16.5, yieldUnitEn: "Ton", yieldUnitAr: "طن", // Avg of 8 and 20
+                    irrigationCountEn: "6-8 times", irrigationCountAr: "6-8 ريات", irrigationNumeric: 7,
+                    plantingTimeEn: "Aug - Sep", plantingTimeAr: "أغسطس - سبتمبر",
+                    harvestTimeEn: "Dec - Jan", harvestTimeAr: "ديسمبر - يناير"
+                },
+                { 
+                    en: "Carrot", ar: "الجزر", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 13, yieldUnitEn: "Ton", yieldUnitAr: "طن", // Avg of 6 and 20
+                    irrigationCountEn: "6-8 times", irrigationCountAr: "6-8 ريات", irrigationNumeric: 7,
+                    plantingTimeEn: "Sep - Nov", plantingTimeAr: "سبتمبر - نوفمبر",
+                    harvestTimeEn: "Jan - Mar", harvestTimeAr: "يناير - مارس"
+                },
+                { 
+                    en: "Turnip", ar: "اللفت", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 8.5, yieldUnitEn: "Ton", yieldUnitAr: "طن", // Avg of 5 and 12
+                    irrigationCountEn: "6-7 times", irrigationCountAr: "6-7 مرات", irrigationNumeric: 7,
+                    plantingTimeEn: "Sep - Nov", plantingTimeAr: "سبتمبر - نوفمبر",
+                    harvestTimeEn: "Dec - Feb", harvestTimeAr: "ديسمبر - فبراير"
+                },
+                { 
+                    en: "Radish", ar: "الفجل", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 6.5, yieldUnitEn: "Ton", yieldUnitAr: "طن", // Avg of 3 and 10
+                    irrigationCountEn: "7-8 times", irrigationCountAr: "7-8 مرات", irrigationNumeric: 8,
+                    plantingTimeEn: "Sep - Feb", plantingTimeAr: "سبتمبر - فبراير",
+                    harvestTimeEn: "40-60 days", harvestTimeAr: "40-60 يوم"
+                },
+                { 
+                    en: "Durum Wheat", ar: "القمح القاسي", categoryEn: "Staple Crops", categoryAr: "محاصيل غذاء أساسية",
+                    yieldPerFeddan: 15, yieldUnitEn: "Ardab", yieldUnitAr: "أردب", // Avg of 8 and 22
+                    irrigationCountEn: "5-7 times", irrigationCountAr: "5-7 مرات", irrigationNumeric: 6,
+                    plantingTimeEn: "Nov - Dec", plantingTimeAr: "نوفمبر - ديسمبر",
+                    harvestTimeEn: "Apr - May", harvestTimeAr: "أبريل - مايو"
+                }
+            ],
+
+            // This is the *old* data for other categories, which we filter
+            // to remove any crops that were moved to the new list.
+            oldCropData: [
+                // 1) Staple Crops (These will be overwritten)
+                // { en: "Wheat", ... },
+                // { en: "Rice", ... },
+                // { en: "Corn (Maize)", ... },
+                // { en: "Barley", ... },
+                // { en: "Potatoes", ... },
+
+                // 2) Vegetables
+                { 
+                    en: "Tomato", ar: "الطماطم", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 30, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Daily (Drip)", irrigationCountAr: "يومي (تنقيط)", irrigationNumeric: 25,
+                    plantingTimeEn: "Feb - Mar / Sep - Oct", plantingTimeAr: "فبراير - مارس / سبتمبر - أكتوبر",
+                    harvestTimeEn: "Jun - Aug / Dec - Feb", harvestTimeAr: "يونيو - أغسطس / ديسمبر - فبراير"
+                },
+                { 
+                    en: "Cucumber", ar: "خيار", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 25, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Daily (Drip)", irrigationCountAr: "يومي (تنقيط)", irrigationNumeric: 28,
+                    plantingTimeEn: "Feb - Apr / Aug - Sep", plantingTimeAr: "فبراير - أبريل / أغسطس - سبتمبر",
+                    harvestTimeEn: "Apr - Jun / Oct - Nov", harvestTimeAr: "أبريل - يونيو / أكتوبر - نوفمبر"
+                },
+                { 
+                    en: "Pepper", ar: "فلفل", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 20, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Frequent (Drip)", irrigationCountAr: "متكرر (تنقيط)", irrigationNumeric: 22,
+                    plantingTimeEn: "Feb - Mar", plantingTimeAr: "فبراير - مارس",
+                    harvestTimeEn: "May - Jul", harvestTimeAr: "مايو - يوليو"
+                },
+                { 
+                    en: "Eggplant", ar: "باذنجان", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 22, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "15-20 times", irrigationCountAr: "15-20 مرة", irrigationNumeric: 18,
+                    plantingTimeEn: "Feb - Apr", plantingTimeAr: "فبراير - أبريل",
+                    harvestTimeEn: "May - Aug", harvestTimeAr: "مايو - أغسطس"
+                },
+                { 
+                    en: "Okra", ar: "بامية", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 5, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Weekly", irrigationCountAr: "أسبوعياً", irrigationNumeric: 10,
+                    plantingTimeEn: "Mar - Apr", plantingTimeAr: "مارس - أبريل",
+                    harvestTimeEn: "May - Aug", harvestTimeAr: "مايو - أغسطس"
+                },
+                { 
+                    en: "Green Beans", ar: "فاصوليا خضراء", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 6, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Weekly", irrigationCountAr: "أسبوعياً", irrigationNumeric: 10,
+                    plantingTimeEn: "Feb - Mar / Sep - Oct", plantingTimeAr: "فبراير - مارس / سبتمبر - أكتوبر",
+                    harvestTimeEn: "Apr - May / Nov - Dec", harvestTimeAr: "أبريل - مايو / نوفمبر - ديسمبر"
+                },
+                { 
+                    en: "Watermelon", ar: "بطيخ", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 20, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "8-10 times", irrigationCountAr: "8-10 مرات", irrigationNumeric: 9,
+                    plantingTimeEn: "Mar - Apr", plantingTimeAr: "مارس - أبريل",
+                    harvestTimeEn: "Jun - Aug", harvestTimeAr: "يونيو - أغسطس"
+                },
+                { 
+                    en: "Onions", ar: "بصل", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 15, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "10-12 times", irrigationCountAr: "10-12 مرة", irrigationNumeric: 11,
+                    plantingTimeEn: "Sep - Nov", plantingTimeAr: "سبتمبر - نوفمبر",
+                    harvestTimeEn: "Mar - Apr", harvestTimeAr: "مارس - أبريل"
+                },
+                { 
+                    en: "Garlic", ar: "ثوم", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 7, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "10-12 times", irrigationCountAr: "10-12 مرة", irrigationNumeric: 11,
+                    plantingTimeEn: "Sep - Oct", plantingTimeAr: "سبتمبر - أكتوبر",
+                    harvestTimeEn: "Mar - Apr", harvestTimeAr: "مارس - أبريل"
+                },
+                { 
+                    en: "Cauliflower", ar: "قرنبيط", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 12, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "10-12 times", irrigationCountAr: "10-12 مرة", irrigationNumeric: 11,
+                    plantingTimeEn: "Aug - Sep", plantingTimeAr: "أغسطس - سبتمبر",
+                    harvestTimeEn: "Dec - Feb", harvestTimeAr: "ديسمبر - فبراير"
+                },
+                { 
+                    en: "Lettuce", ar: "خس", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 10, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Frequent", irrigationCountAr: "متكرر", irrigationNumeric: 15,
+                    plantingTimeEn: "Sep - Nov", plantingTimeAr: "سبتمبر - نوفمبر",
+                    harvestTimeEn: "Dec - Feb", harvestTimeAr: "ديسمبر - فبراير"
+                },
+                { 
+                    en: "Cabbage", ar: "كرنب", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 20, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "10-12 times", irrigationCountAr: "10-12 مرة", irrigationNumeric: 11,
+                    plantingTimeEn: "Aug - Oct", plantingTimeAr: "أغسطس - أكتوبر",
+                    harvestTimeEn: "Dec - Feb", harvestTimeAr: "ديسمبر - فبراير"
+                },
+                { 
+                    en: "Spinach", ar: "سبانخ", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 8, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Frequent", irrigationCountAr: "متكرر", irrigationNumeric: 14,
+                    plantingTimeEn: "Sep - Nov", plantingTimeAr: "سبتمبر - نوفمبر",
+                    harvestTimeEn: "Nov - Jan", harvestTimeAr: "نوفمبر - يناير"
+                },
+                { 
+                    en: "Molokhia", ar: "ملوخية", categoryEn: "Vegetables", categoryAr: "الخضروات",
+                    yieldPerFeddan: 5, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Frequent", irrigationCountAr: "متكرر", irrigationNumeric: 15,
+                    plantingTimeEn: "Mar - Jul", plantingTimeAr: "مارس - يوليو",
+                    harvestTimeEn: "May - Sep", harvestTimeAr: "مايو - سبتمبر"
+                },
+
+                // 3) Fruits
+                { 
+                    en: "Oranges", ar: "برتقال", categoryEn: "Fruits", categoryAr: "الفواكه",
+                    yieldPerFeddan: 20, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Weekly (Drip)", irrigationCountAr: "أسبوعياً (تنقيط)", irrigationNumeric: 18,
+                    plantingTimeEn: "Feb - Mar", plantingTimeAr: "فبراير - مارس",
+                    harvestTimeEn: "Nov - Feb", harvestTimeAr: "نوفمبر - فبراير"
+                },
+                { 
+                    en: "Lemon", ar: "ليمون", categoryEn: "Fruits", categoryAr: "الفواكه",
+                    yieldPerFeddan: 18, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Weekly (Drip)", irrigationCountAr: "أسبوعياً (تنقيط)", irrigationNumeric: 18,
+                    plantingTimeEn: "Feb - Mar", plantingTimeAr: "فبراير - مارس",
+                    harvestTimeEn: "All Year", harvestTimeAr: "طوال العام"
+                },
+                { 
+                    en: "Mango", ar: "مانجو", categoryEn: "Fruits", categoryAr: "الفواكه",
+                    yieldPerFeddan: 8, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Weekly (Drip)", irrigationCountAr: "أسبوعياً (تنقيط)", irrigationNumeric: 16,
+                    plantingTimeEn: "Mar - Apr", plantingTimeAr: "مارس - أبريل",
+                    harvestTimeEn: "Jul - Sep", harvestTimeAr: "يوليو - سبتمبر"
+                },
+                { 
+                    en: "Grapes", ar: "عنب", categoryEn: "Fruits", categoryAr: "الفواكه",
+                    yieldPerFeddan: 12, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Weekly (Drip)", irrigationCountAr: "أسبوعياً (تنقيط)", irrigationNumeric: 15,
+                    plantingTimeEn: "Jan - Feb", plantingTimeAr: "يناير - فبراير",
+                    harvestTimeEn: "Jul - Sep", harvestTimeAr: "يوليو - سبتمبر"
+                },
+                { 
+                    en: "Strawberries", ar: "فراولة", categoryEn: "Fruits", categoryAr: "الفواكه",
+                    yieldPerFeddan: 18, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Daily (Drip)", irrigationCountAr: "يومي (تنقيط)", irrigationNumeric: 28,
+                    plantingTimeEn: "Sep - Oct", plantingTimeAr: "سبتمبر - أكتوبر",
+                    harvestTimeEn: "Dec - Apr", harvestTimeAr: "ديسمبر - أبريل"
+                },
+                { 
+                    en: "Pomegranate", ar: "رمان", categoryEn: "Fruits", categoryAr: "الفواكه",
+                    yieldPerFeddan: 15, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Weekly (Drip)", irrigationCountAr: "أسبوعياً (تنقيط)", irrigationNumeric: 12,
+                    plantingTimeEn: "Feb - Mar", plantingTimeAr: "فبراير - مارس",
+                    harvestTimeEn: "Aug - Oct", harvestTimeAr: "أغسطس - أكتوبر"
+                },
+                { 
+                    en: "Guava", ar: "جوافة", categoryEn: "Fruits", categoryAr: "الفواكه",
+                    yieldPerFeddan: 16, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Weekly", irrigationCountAr: "أسبوعياً", irrigationNumeric: 13,
+                    plantingTimeEn: "Mar - Apr", plantingTimeAr: "مارس - أبريل",
+                    harvestTimeEn: "Aug - Nov", harvestTimeAr: "أغسطس - نوفمبر"
+                },
+                { 
+                    en: "Banana", ar: "موز", categoryEn: "Fruits", categoryAr: "الفواكه",
+                    yieldPerFeddan: 25, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Frequent", irrigationCountAr: "متكرر", irrigationNumeric: 20,
+                    plantingTimeEn: "All Year", plantingTimeAr: "طوال العام",
+                    harvestTimeEn: "All Year", harvestTimeAr: "طوال العام"
+                },
+                { 
+                    en: "Dates", ar: "نخيل البلح", categoryEn: "Fruits", categoryAr: "الفواكه",
+                    yieldPerFeddan: 0.15, yieldUnitEn: "Ton (per Palm)", yieldUnitAr: "طن (للنخلة)",
+                    irrigationCountEn: "Bi-weekly", irrigationCountAr: "كل أسبوعين", irrigationNumeric: 8,
+                    plantingTimeEn: "Mar - Apr", plantingTimeAr: "مارس - أبريل",
+                    harvestTimeEn: "Aug - Oct", harvestTimeAr: "أغسطس - أكتوبر"
+                },
+
+                // 4) Legumes
+                { 
+                    en: "Fava Beans", ar: "الفول البلدي", categoryEn: "Legumes", categoryAr: "البقوليات",
+                    yieldPerFeddan: 1.5, yieldUnitEn: "Ton (Dry)", yieldUnitAr: "طن (جاف)",
+                    irrigationCountEn: "5-7 times", irrigationCountAr: "5-7 مرات", irrigationNumeric: 6,
+                    plantingTimeEn: "Oct - Nov", plantingTimeAr: "أكتوبر - نوفمبر",
+                    harvestTimeEn: "Mar - Apr", harvestTimeAr: "مارس - أبريل"
+                },
+                { 
+                    en: "Lentils", ar: "العدس", categoryEn: "Legumes", categoryAr: "البقوليات",
+                    yieldPerFeddan: 1, yieldUnitEn: "Ton (Dry)", yieldUnitAr: "طن (جاف)",
+                    irrigationCountEn: "3-4 times", irrigationCountAr: "3-4 مرات", irrigationNumeric: 4,
+                    plantingTimeEn: "Oct - Nov", plantingTimeAr: "أكتوبر - نوفمبر",
+                    harvestTimeEn: "Mar - Apr", harvestTimeAr: "مارس - أبريل"
+                },
+                { 
+                    en: "Chickpeas", ar: "الحمص", categoryEn: "Legumes", categoryAr: "البقوليات",
+                    yieldPerFeddan: 1.2, yieldUnitEn: "Ton (Dry)", yieldUnitAr: "طن (جاف)",
+                    irrigationCountEn: "4-5 times", irrigationCountAr: "4-5 مرات", irrigationNumeric: 5,
+                    plantingTimeEn: "Nov - Dec", plantingTimeAr: "نوفمبر - ديسمبر",
+                    harvestTimeEn: "Apr - May", harvestTimeAr: "أبريل - مايو"
+                },
+                { 
+                    en: "Soybean", ar: "فول الصويا", categoryEn: "Legumes", categoryAr: "البقوليات", // Also Oil
+                    yieldPerFeddan: 1.5, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "8-10 times", irrigationCountAr: "8-10 مرات", irrigationNumeric: 9,
+                    plantingTimeEn: "Apr - May", plantingTimeAr: "أبريل - مايو",
+                    harvestTimeEn: "Aug - Sep", harvestTimeAr: "أغسطس - سبتمبر"
+                },
+                { 
+                    en: "Peanut", ar: "الفول السوداني", categoryEn: "Legumes", categoryAr: "البقوليات", // Also Oil
+                    yieldPerFeddan: 1.8, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "10-12 times", irrigationCountAr: "10-12 مرة", irrigationNumeric: 11,
+                    plantingTimeEn: "Apr - May", plantingTimeAr: "أبريل - مايو",
+                    harvestTimeEn: "Aug - Sep", harvestTimeAr: "أغسطس - سبتمبر"
+                },
+
+                // 5) Oil Crops
+                { 
+                    en: "Sesame", ar: "السمسم", categoryEn: "Oil Crops", categoryAr: "المحاصيل الزيتية",
+                    yieldPerFeddan: 0.5, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "4-6 times", irrigationCountAr: "4-6 مرات", irrigationNumeric: 5,
+                    plantingTimeEn: "Apr - May", plantingTimeAr: "أبريل - مايو",
+                    harvestTimeEn: "Aug - Sep", harvestTimeAr: "أغسطس - سبتمبر"
+                },
+                { 
+                    en: "Sunflower", ar: "بذور عباد الشمس", categoryEn: "Oil Crops", categoryAr: "المحاصيل الزيتية",
+                    yieldPerFeddan: 1.2, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "6-8 times", irrigationCountAr: "6-8 مرات", irrigationNumeric: 7,
+                    plantingTimeEn: "Mar - Jun", plantingTimeAr: "مارس - يونيو",
+                    harvestTimeEn: "Jul - Sep", harvestTimeAr: "يوليو - سبتمبر"
+                },
+                { 
+                    en: "Olive", ar: "الزيتون", categoryEn: "Oil Crops", categoryAr: "المحاصيل الزيتية",
+                    yieldPerFeddan: 5, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "Bi-weekly (Drip)", irrigationCountAr: "كل أسبوعين (تنقيط)", irrigationNumeric: 9,
+                    plantingTimeEn: "Feb - Mar", plantingTimeAr: "فبراير - مارس",
+                    harvestTimeEn: "Sep - Nov", harvestTimeAr: "سبتمبر - نوفمبر"
+                },
+
+                // 6) Sugar Crops
+                { 
+                    en: "Sugarcane", ar: "قصب السكر", categoryEn: "Sugar Crops", categoryAr: "المحاصيل السكرية",
+                    yieldPerFeddan: 50, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "20-25 times", irrigationCountAr: "20-25 مرة", irrigationNumeric: 23,
+                    plantingTimeEn: "Feb - Mar", plantingTimeAr: "فبراير - مارس",
+                    harvestTimeEn: "Dec - Mar", harvestTimeAr: "ديسمبر - مارس"
+                },
+                { 
+                    en: "Sugar Beet", ar: "بنجر السكر", categoryEn: "Sugar Crops", categoryAr: "المحاصيل السكرية",
+                    yieldPerFeddan: 25, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "7-9 times", irrigationCountAr: "7-9 مرات", irrigationNumeric: 8,
+                    plantingTimeEn: "Aug - Oct", plantingTimeAr: "أغسطس - أكتوبر",
+                    harvestTimeEn: "Feb - Apr", harvestTimeAr: "فبراير - أبريل"
+                },
+
+                // 7) Forage Crops
+                { 
+                    en: "Egyptian Clover (Berseem)", ar: "البرسيم المصري", categoryEn: "Forage Crops", categoryAr: "الأعلاف",
+                    yieldPerFeddan: 40, yieldUnitEn: "Ton (Green)", yieldUnitAr: "طن (أخضر)",
+                    irrigationCountEn: "8-10 times", irrigationCountAr: "8-10 مرات", irrigationNumeric: 9,
+                    plantingTimeEn: "Sep - Oct", plantingTimeAr: "سبتمبر - أكتوبر",
+                    harvestTimeEn: "Dec - May (Multiple cuts)", harvestTimeAr: "ديسمبر - مايو (عدة حشات)"
+                },
+                { 
+                    en: "Alfalfa", ar: "البرسيم الحجازي", categoryEn: "Forage Crops", categoryAr: "الأعلاف",
+                    yieldPerFeddan: 60, yieldUnitEn: "Ton (Green)", yieldUnitAr: "طن (أخضر)",
+                    irrigationCountEn: "Weekly", irrigationCountAr: "أسبوعياً", irrigationNumeric: 18,
+                    plantingTimeEn: "Oct - Nov", plantingTimeAr: "أكتوبر - نوفمبر",
+                    harvestTimeEn: "All year (Multiple cuts)", harvestTimeAr: "طوال العام (عدة حشات)"
+                },
+                { 
+                    en: "Forage Corn", ar: "الذرة العلف", categoryEn: "Forage Crops", categoryAr: "الأعلاف",
+                    yieldPerFeddan: 25, yieldUnitEn: "Ton (Silage)", yieldUnitAr: "طن (سيلاج)",
+                    irrigationCountEn: "7-9 times", irrigationCountAr: "7-9 مرات", irrigationNumeric: 8,
+                    plantingTimeEn: "May - Jul", plantingTimeAr: "مايو - يوليو",
+                    harvestTimeEn: "Jul - Sep", harvestTimeAr: "يوليو - سبتمبر"
+                },
+
+                // 8) Medicinal & Aromatic Plants
+                { 
+                    en: "Mint", ar: "نعناع", categoryEn: "Medicinal & Aromatic Plants", categoryAr: "المحاصيل الطبية والعطرية",
+                    yieldPerFeddan: 3, yieldUnitEn: "Ton (Dry)", yieldUnitAr: "طن (جاف)",
+                    irrigationCountEn: "Weekly", irrigationCountAr: "أسبوعياً", irrigationNumeric: 14,
+                    plantingTimeEn: "Feb - Mar", plantingTimeAr: "فبراير - مارس",
+                    harvestTimeEn: "Multiple cuts", harvestTimeAr: "عدة حشات"
+                },
+                { 
+                    en: "Basil", ar: "ريحان", categoryEn: "Medicinal & Aromatic Plants", categoryAr: "المحاصيل الطبية والعطرية",
+                    yieldPerFeddan: 2.5, yieldUnitEn: "Ton (Dry)", yieldUnitAr: "طن (جاف)",
+                    irrigationCountEn: "Weekly", irrigationCountAr: "أسبوعياً", irrigationNumeric: 13,
+                    plantingTimeEn: "Mar - Apr", plantingTimeAr: "مارس - أبريل",
+                    harvestTimeEn: "Multiple cuts", harvestTimeAr: "عدة حشات"
+                },
+                { 
+                    en: "Chamomile", ar: "بابونج", categoryEn: "Medicinal & Aromatic Plants", categoryAr: "المحاصيل الطبية والعطرية",
+                    yieldPerFeddan: 0.8, yieldUnitEn: "Ton (Dry flowers)", yieldUnitAr: "طن (أزهار جافة)",
+                    irrigationCountEn: "6-8 times", irrigationCountAr: "6-8 مرات", irrigationNumeric: 7,
+                    plantingTimeEn: "Oct - Nov", plantingTimeAr: "أكتوبر - نوفمبر",
+                    harvestTimeEn: "Jan - Mar", harvestTimeAr: "يناير - مارس"
+                },
+                { 
+                    en: "Cumin", ar: "كمون", categoryEn: "Medicinal & Aromatic Plants", categoryAr: "المحاصيل الطبية والعطرية",
+                    yieldPerFeddan: 0.6, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "4-5 times", irrigationCountAr: "4-5 مرات", irrigationNumeric: 5,
+                    plantingTimeEn: "Oct - Nov", plantingTimeAr: "أكتوبر - نوفمبر",
+                    harvestTimeEn: "Apr - May", harvestTimeAr: "أبريل - مايو"
+                },
+                { 
+                    en: "Moringa", ar: "مورينجا", categoryEn: "Medicinal & Aromatic Plants", categoryAr: "المحاصيل الطبية والعطرية",
+                    yieldPerFeddan: 4, yieldUnitEn: "Ton (Dry Leaf)", yieldUnitAr: "طن (ورق جاف)",
+                    irrigationCountEn: "Weekly", irrigationCountAr: "أسبوعياً", irrigationNumeric: 10,
+                    plantingTimeEn: "Mar - May", plantingTimeAr: "مارس - مايو",
+                    harvestTimeEn: "Multiple (all year)", harvestTimeAr: "عدة مرات (طوال العام)"
+                },
+
+                // 9) Fiber / Industrial Crops
+                { 
+                    en: "Cotton", ar: "القطن", categoryEn: "Fiber / Industrial Crops", categoryAr: "المحاصيل الليفية – الصناعية",
+                    yieldPerFeddan: 1, yieldUnitEn: "Ton", yieldUnitAr: "طن",
+                    irrigationCountEn: "10-12 times", irrigationCountAr: "10-12 مرة", irrigationNumeric: 11,
+                    plantingTimeEn: "Mar - Apr", plantingTimeAr: "مارس - أبريل",
+                    harvestTimeEn: "Sep - Oct", harvestTimeAr: "سبتمبر - أكتوبر"
+                },
+                { 
+                    en: "Flax", ar: "الكتان", categoryEn: "Fiber / Industrial Crops", categoryAr: "المحاصيل الليفية – الصناعية",
+                    yieldPerFeddan: 0.8, yieldUnitEn: "Ton (Seeds)", yieldUnitAr: "طن (بذور)",
+                    irrigationCountEn: "5-6 times", irrigationCountAr: "5-6 مرات", irrigationNumeric: 6,
+                    plantingTimeEn: "Oct - Nov", plantingTimeAr: "أكتوبر - نوفمبر",
+                    harvestTimeEn: "Apr - May", harvestTimeAr: "أبريل - مايو"
+                },
+
+                // 10) Ornamental Plants
+                { 
+                    en: "Rose", ar: "ورد", categoryEn: "Ornamental Plants", categoryAr: "نباتات الزينة",
+                    yieldPerFeddan: 300, yieldUnitEn: "Thousand flowers", yieldUnitAr: "ألف زهرة",
+                    irrigationCountEn: "Frequent (Drip)", irrigationCountAr: "متكرر (تنقيط)", irrigationNumeric: 20,
+                    plantingTimeEn: "Feb - Mar", plantingTimeAr: "فبراير - مارس",
+                    harvestTimeEn: "All Year", harvestTimeAr: "طوال العام"
+                },
+                { 
+                    en: "Jasmine", ar: "ياسمين", categoryEn: "Ornamental Plants", categoryAr: "نباتات الزينة",
+                    yieldPerFeddan: 4, yieldUnitEn: "Ton (Flowers)", yieldUnitAr: "طن (أزهار)",
+                    irrigationCountEn: "Weekly (Drip)", irrigationCountAr: "أسبوعياً (تنقيط)", irrigationNumeric: 15,
+                    plantingTimeEn: "Feb - Mar", plantingTimeAr: "فبراير - مارس",
+                    harvestTimeEn: "May - Oct", harvestTimeAr: "مايو - أكتوبر"
+                },
+                { 
+                    en: "Ficus", ar: "فيكس", categoryEn: "Ornamental Plants", categoryAr: "نباتات الزينة",
+                    yieldPerFeddan: 500, yieldUnitEn: "Plant", yieldUnitAr: "نبتة",
+                    irrigationCountEn: "Weekly", irrigationCountAr: "أسبوعياً", irrigationNumeric: 10,
+                    plantingTimeEn: "Mar - May", plantingTimeAr: "مارس - مايو",
+                    harvestTimeEn: "N/A", harvestTimeAr: "N/A"
+                }
+            ],
+            
+            // --- NEW DATA END ---
+
+            // Helper list of crops to replace from the old data
+            cropsToOverwrite: [
+                "Wheat", "Rice", "Corn (Maize)", "Sorghum", "Barley", "Millet", 
+                "Potato", "Sweet Potato", "Taro", "Table Beet", "Carrot", 
+                "Turnip", "Radish", "Durum Wheat"
+            ]
+        };
+
+        // --- Build Final Crop List ---
+        // Filter old data to remove crops that are now in the new list
+        data.otherCrops = data.oldCropData.filter(crop => !data.cropsToOverwrite.includes(crop.en));
+        // Combine the new staple crops list with the filtered old data
+        data.allPossibleCrops = [...data.newStapleCropsData, ...data.otherCrops];
+
+
+        // --- Helper Functions ---
+
+        function updateTexts() {
+            const current = translations[currentLang];
+            document.querySelectorAll('[data-translate-key]').forEach(element => {
+                const key = element.getAttribute('data-translate-key');
+                if (current && current[key]) {
+                    // Handle input placeholders specifically
+                    if (element.tagName === 'INPUT' && key === 'chatPlaceholder') {
+                        element.placeholder = current[key];
+                    } else {
+                        element.textContent = current[key];
+                    }
+                }
+            });
+
+            // Update directionality
+            document.documentElement.lang = currentLang;
+            document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
+            
+            // Update dynamic placeholders/attributes
+            chatInput.placeholder = translations[currentLang]['chatPlaceholder'];
+            document.querySelector('title').textContent = translations[currentLang]['appTitle'];
+
+            // Repopulate all menus after language change to update options text
+            populateGovernorates();
+            populateMonths();
+            populateLandTypes();
+            populateIrrigationMethods();
+            populateCropCategories();
+            
+            // Re-run calculation to update the simulation text
+            calculateRecommendations();
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('language', currentLang);
+            updateTexts();
+        }
+
+        function initializeLanguage() {
+            const savedLang = localStorage.getItem('language');
+            if (savedLang) {
+                currentLang = savedLang;
+            } else {
+                currentLang = navigator.language.startsWith('ar') ? 'ar' : 'en';
+            }
+            updateTexts();
+        }
+        
+        function populateSelect(selectElement, dataArray, storageKey, placeholderKey) {
+            // Guard against null elements if recommendationView isn't visible
+            if (!selectElement) return; 
+            
+            const currentVal = selectElement.value;
+            selectElement.innerHTML = `<option value="" disabled>${translations[currentLang][placeholderKey]}</option>`;
+            dataArray.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.en;
+                option.textContent = item[currentLang];
+                selectElement.appendChild(option);
+            });
+            
+            // Try to restore previous value, otherwise check local storage
+            if(currentVal && selectElement.querySelector(`option[value="${currentVal}"]`)) {
+                 selectElement.value = currentVal;
+            } else {
+                const selectedValue = localStorage.getItem(storageKey);
+                if (selectedValue && selectElement.querySelector(`option[value="${selectedValue}"]`)) {
+                    selectElement.value = selectedValue;
+                } else {
+                    selectElement.value = ""; // Ensure placeholder is selected
+                }
+            }
+        }
+
+        function populateGovernorates() { populateSelect(govSelect, data.governorates, 'selectedGov', 'selectGov'); }
+        function populateMonths() { populateSelect(monthSelect, data.months, 'selectedMonth', 'selectMonth'); }
+        function populateLandTypes() { populateSelect(landTypeSelect, data.landTypes, 'selectedLandType', 'selectLand'); }
+        function populateIrrigationMethods() { populateSelect(irrigationSelect, data.irrigationMethods, 'selectedIrrigation', 'selectIrrigation'); }
+        function populateCropCategories() { populateSelect(categorySelect, data.cropCategories, 'selectedCategory', 'selectCategory'); }
+
+        // --- Navigation Logic ---
+
+        function updateBackButtonVisibility() {
+            // Show back button if not on landing page OR login page
+            if (currentView !== 'landingView' && currentView !== 'loginView') {
+                backButton.classList.remove('hidden');
+            } else {
+                backButton.classList.add('hidden');
+            }
+        }
+        
+        function navigateTo(viewId) {
+            if (viewId === currentView) return; // Don't navigate to the same view
+            
+            // Only push to history if it's a new view (not going back)
+            if (viewId !== viewHistory[viewHistory.length - 1]) {
+                 // Special case: if logging in, clear history so "back" goes to landing
+                if (viewId === 'loginView') {
+                    viewHistory = ['landingView', 'loginView'];
+                } else {
+                    viewHistory.push(viewId);
+                }
+            }
+
+            currentView = viewId;
+
+            document.querySelectorAll('main > div').forEach(view => {
+                view.classList.add('hidden');
+                view.classList.remove('animate-fade-in'); 
+            });
+
+            const targetView = document.getElementById(viewId);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+                setTimeout(() => targetView.classList.add('animate-fade-in'), 10);
+            }
+
+            updateBackButtonVisibility();
+
+            if (viewId === 'recommendationView') {
+                setTimeout(() => chatMessages.scrollTop = chatMessages.scrollHeight, 100);
+            }
+        }
+        
+        function goBack() {
+            if (viewHistory.length > 1) {
+                viewHistory.pop(); 
+                const previousViewId = viewHistory[viewHistory.length - 1]; 
+                
+                // Prevent navigating *to* the same view
+                if (previousViewId === currentView) {
+                    if (viewHistory.length > 1) viewHistory.pop();
+                    currentView = viewHistory[viewHistory.length - 1] || 'landingView';
+                } else {
+                    currentView = previousViewId;
+                }
+                
+                document.querySelectorAll('main > div').forEach(view => {
+                    view.classList.add('hidden');
+                    view.classList.remove('animate-fade-in'); 
+                });
+
+                const targetView = document.getElementById(currentView);
+                if (targetView) {
+                    targetView.classList.remove('hidden');
+                    setTimeout(() => targetView.classList.add('animate-fade-in'), 10);
+                }
+
+                updateBackButtonVisibility();
+            } else {
+                navigateTo('landingView'); // Failsafe
+            }
+        }
+        
+        // --- Theme Toggle Logic ---
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            
+            // Toggle icons
+            document.querySelector('[data-theme-icon-light]').classList.toggle('icon-hidden', theme === 'dark');
+            document.querySelector('[data-theme-icon-dark]').classList.toggle('icon-hidden', theme === 'light');
+        }
+
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const defaultTheme = savedTheme || (prefersDark ? 'dark' : 'light');
+            setTheme(defaultTheme);
+        }
+
+        // --- Auth Logic ---
+        function updateHeaderButtons() {
+            loginButton.classList.toggle('hidden', isLoggedIn);
+            logoutButton.classList.toggle('hidden', !isLoggedIn);
+        }
+
+        function handleLogin(event) {
+            event.preventDefault(); // Stop form from submitting
+            const email = emailInput.value;
+            const pass = passwordInput.value;
+
+            if (!email || !pass) {
+                loginErrorBox.textContent = translations[currentLang].loginError;
+                loginErrorBox.classList.remove('hidden');
+                return;
+            }
+
+            // --- Simulation ---
+            console.log("Simulating login for:", email);
+            isLoggedIn = true;
+            // --- End Simulation ---
+            
+            loginErrorBox.classList.add('hidden');
+            updateHeaderButtons();
+            navigateTo('landingView'); // Go to homepage after login
+            
+            // Clear login form
+            emailInput.value = '';
+            passwordInput.value = '';
+        }
+
+
+        function handleLogout() {
+            isLoggedIn = false;
+            updateHeaderButtons();
+            navigateTo('landingView'); // Go to homepage after logout
+        }
+
+
+        // --- Error Handling ---
+        function showError(message, box = errorBox) {
+            box.textContent = message;
+            box.classList.remove('hidden');
+            setTimeout(() => {
+                box.classList.remove('opacity-0');
+            }, 10);
+            
+            setTimeout(() => {
+                box.classList.add('opacity-0');
+                setTimeout(() => {
+                    box.classList.add('hidden');
+                    box.textContent = ''; 
+                }, 300);
+            }, 4000);
+        }
+
+        // --- Main Calculation/Recommendation Logic (MODIFICATION 3: Big Update) ---
+        function calculateRecommendations() {
+            // Guard against running this logic if the view isn't active
+            if (currentView !== 'recommendationView') return;
+
+            const gov = govSelect.value;
+            const month = monthSelect.value;
+            const feddan = parseFloat(feddanInput.value) || 1; // Default to 1 if empty
+            const landType = landTypeSelect.value;
+            const irrigation = irrigationSelect.value;
+            const category = categorySelect.value;
+
+            // Store all selections
+            localStorage.setItem('selectedGov', gov);
+            localStorage.setItem('selectedMonth', month);
+            localStorage.setItem('feddanInput', feddanInput.value);
+            localStorage.setItem('selectedLandType', landType);
+            localStorage.setItem('selectedIrrigation', irrigation);
+            localStorage.setItem('selectedCategory', category);
+
+            // Validation for 6 fields
+            if (!gov) { 
+                recommendationResult.innerHTML = `<p class="text-gray-500 dark:text-gray-400" data-translate-key="initialPrompt">${translations[currentLang].initialPrompt}</p>`;
+                showError(translations[currentLang].errorGov); 
+                return; 
+            }
+            if (!month) { 
+                recommendationResult.innerHTML = `<p class="text-gray-500 dark:text-gray-400" data-translate-key="initialPrompt">${translations[currentLang].initialPrompt}</p>`;
+                showError(translations[currentLang].errorMonth); 
+                return; 
+            }
+            if (isNaN(feddan) || feddan <= 0) { 
+                recommendationResult.innerHTML = `<p class="text-gray-500 dark:text-gray-400" data-translate-key="initialPrompt">${translations[currentLang].initialPrompt}</p>`;
+                showError(translations[currentLang].errorArea); 
+                return; 
+            }
+            if (!landType) { 
+                recommendationResult.innerHTML = `<p class="text-gray-500 dark:text-gray-400" data-translate-key="initialPrompt">${translations[currentLang].initialPrompt}</p>`;
+                showError(translations[currentLang].errorLand); 
+                return; 
+            }
+            if (!irrigation) { 
+                recommendationResult.innerHTML = `<p class="text-gray-500 dark:text-gray-400" data-translate-key="initialPrompt">${translations[currentLang].initialPrompt}</p>`;
+                showError(translations[currentLang].errorIrrigation); 
+                return; 
+            }
+            if (!category) { 
+                recommendationResult.innerHTML = `<p class="text-gray-500 dark:text-gray-400" data-translate-key="initialPrompt">${translations[currentLang].initialPrompt}</p>`;
+                showError(translations[currentLang].errorCategory); 
+                return; 
+            }
+            
+            // Hide any previous error message on successful validation
+            errorBox.classList.add('opacity-0');
+            setTimeout(() => errorBox.classList.add('hidden'), 300);
+
+            // MODIFICATION: Filter by selected category FIRST
+            const filteredCrops = data.allPossibleCrops.filter(crop => crop.categoryEn === category);
+
+            let cropScores = [];
+            const currentTranslations = translations[currentLang];
+
+            // MODIFICATION: Loop over filteredCrops
+            filteredCrops.forEach(crop => {
+                // Start with a random base score to make it look dynamic
+                let score = Math.floor(Math.random() * 30) + 30; // Base score between 30-60
+
+                // Add points based on inputs (Area/feddan is NOT used for scoring)
+                // --- NEW SCORING LOGIC BASED ON USER'S DATA ---
+                
+                // STAPLE CROPS
+                if (crop.en === "Wheat" && (month === "November" || month === "December")) score += 30;
+                if (crop.en === "Durum Wheat" && (month === "November" || month === "December")) score += 30;
+                if (crop.en === "Wheat" && landType === "Old Agricultural") score += 15;
+                if (crop.en === "Rice" && (gov === "Kafr El Sheikh" || gov === "Dakahlia") && (month === "April" || month === "May")) score += 35;
+                if (crop.en === "Maize" && (month === "May" || month === "June")) score += 20;
+                if (crop.en === "Sorghum" && (month === "May" || month === "June" || month === "July")) score += 20;
+                if (crop.en === "Barley" && (gov === "Matrouh" || gov === "North Sinai") && (month === "November" || month === "December")) score += 30;
+                if (crop.en === "Potato" && (month === "September" || month === "January" || month === "November")) score += 25;
+                if (crop.en === "Sweet Potato" && (month === "April" || month === "May")) score += 20;
+                if (crop.en === "Taro" && (month === "March" || month === "April")) score += 20;
+                if (crop.en === "Table Beet" && (month === "August" || month === "September")) score += 20;
+                if (crop.en === "Carrot" && (month === "September" || month === "October" || month === "November")) score += 20;
+                
+                // OTHER CROPS (from old logic, but still relevant)
+                if (crop.en === "Tomato" && (month === "February" || month === "March" || month === "September" || month === "October")) score += 25;
+                if (crop.en === "Grapes" && gov === "Fayoum") score += 20;
+                if (crop.en === "Sesame" && landType === "Recently Reclaimed") score += 25;
+                if (crop.en === "Moringa" && landType === "Recently Reclaimed") score += 30;
+                if (crop.en === "Egyptian Clover (Berseem)" && (month === "September" || month === "October")) score += 20;
+                if (crop.en === "Sugar Beet" && (gov === "Kafr El Sheikh" || gov === "Dakahlia") && (month === "August" || month === "September" || month === "October")) score += 25;
+                if (crop.en === "Dates" && (gov === "New Valley" || gov === "Aswan" || gov === "Luxor")) score += 30;
+                if (crop.en === "Mango" && gov === "Ismailia") score += 30;
+                if (crop.en === "Oranges" && (gov === "Beheira" || gov === "Sharqia" || gov === "Qalyubia")) score += 20;
+                if (crop.en === "Strawberries" && (gov === "Qalyubia" || gov === "Ismailia")) score += 25;
+
+                // MODIFICATION: Adjust score based on irrigation
+                const irrigationValue = crop.irrigationNumeric; // Use the new numeric field
+                if (irrigation === "Rain-fed") {
+                    if (irrigationValue <= 5) score += 25; // Big boost for low-water crops
+                    else if (irrigationValue > 12) score -= 20; // Penalty for high-water crops
+                } else if (irrigation === "Drip Irrigation") {
+                    if (irrigationValue > 5 && irrigationValue <= 18) score += 20; // Boost for medium
+                    else if (irrigationValue > 18) score -= 15; // Penalty for high-water
+                } else if (irrigation === "Flood Irrigation") {
+                    if (irrigationValue > 8 || crop.irrigationCountEn === "Continuous Flood") score += 25; // Boost for high-water
+                    else if (irrigationValue <= 5) score -= 20; // Penalty for low-water
+                }
+                
+                // Cap score
+                score = Math.min(score, 100); 
+                score = Math.max(score, 10); // Ensure a minimum score
+
+                cropScores.push({ 
+                    name: crop[currentLang], 
+                    score: score,
+                    // Pass all new data through
+                    yieldPerFeddan: crop.yieldPerFeddan,
+                    yieldUnit: crop[currentLang === 'en' ? 'yieldUnitEn' : 'yieldUnitAr'],
+                    irrigationCount: crop[currentLang === 'en' ? 'irrigationCountEn' : 'irrigationCountAr'],
+                    plantingTime: crop[currentLang === 'en' ? 'plantingTimeEn' : 'plantingTimeAr'],
+                    harvestTime: crop[currentLang === 'en' ? 'harvestTimeEn' : 'harvestTimeAr']
+                });
+            });
+
+            // Sort by score descending
+            cropScores.sort((a, b) => b.score - a.score);
+
+            // MODIFICATION: Get top 5 (or fewer if category is small)
+            const topCrops = cropScores.slice(0, 5);
+
+            // --- Generate new HTML for the results ---
+            let resultHTML = `<div class="space-y-4">`; // Container for cards
+
+            topCrops.forEach((crop, index) => {
+                // Calculate total yield
+                const totalYield = (crop.yieldPerFeddan * feddan).toFixed(1);
+                
+                resultHTML += `
+                    <div class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 space-y-3">
+                        <!-- Header: Name and Score -->
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-secondary text-xl">
+                                ${index + 1}. ${crop.name}
+                            </span>
+                            <span class="font-bold text-primary text-lg">
+                                ${crop.score}% ${currentTranslations.suitable}
+                            </span>
+                        </div>
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2.5">
+                            <div class="bg-primary h-2.5 rounded-full transition-all duration-500 ease-out" style="width: ${crop.score}%"></div>
+                        </div>
+                        <!-- Details Grid -->
+                        <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm pt-2">
+                            <!-- Total Yield -->
+                            <div class="font-medium text-gray-600 dark:text-gray-300">${currentTranslations.totalYield}</div>
+                            <div class="font-bold">${totalYield} ${crop.yieldUnit}</div>
+                            
+                            <!-- Planting Time -->
+                            <div class="font-medium text-gray-600 dark:text-gray-300">${currentTranslations.plantingTime}</div>
+                            <div>${crop.plantingTime}</div>
+                            
+                            <!-- Harvest Time -->
+                            <div class="font-medium text-gray-600 dark:text-gray-300">${currentTranslations.harvestTime}</div>
+                            <div>${crop.harvestTime}</div>
+                            
+                            <!-- Irrigation -->
+                            <div class="font-medium text-gray-600 dark:text-gray-300">${currentTranslations.irrigationFreq}</div>
+                            <div>${crop.irrigationCount}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            resultHTML += `</div>`; // Close container
+            
+            recommendationResult.innerHTML = resultHTML;
+        }
+
+        // --- Chatbot Logic (UPDATED System Prompt) ---
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            appendMessage(message, 'user');
+            chatInput.value = '';
+            chatSendBtn.disabled = true;
+            chatInput.disabled = true;
+
+            // Gather all 6 inputs for context
+            const gov = govSelect.options[govSelect.selectedIndex]?.textContent || 'N/A';
+            const month = monthSelect.options[monthSelect.selectedIndex]?.textContent || 'N/A';
+            const feddan = feddanInput.value || '1';
+            const landType = landTypeSelect.options[landTypeSelect.selectedIndex]?.textContent || 'N/A';
+            const irrigation = irrigationSelect.options[irrigationSelect.selectedIndex]?.textContent || 'N/A';
+            const category = categorySelect.options[categorySelect.selectedIndex]?.textContent || 'N/A';
+            
+            // Get the new top recommendation
+            const topRecommendationText = recommendationResult.querySelector('div.text-secondary')?.textContent || "No recommendation yet";
+
+            // Comprehensive System Prompt
+            const systemPrompt = `You are an expert agricultural consultant in Egypt for the ISPSC system. Your user is seeking advice for a field with the following characteristics: Governorate: ${gov}, Month: ${month}, Area: ${feddan} feddan, Land Type: ${landType}, Irrigation: ${irrigation}, Crop Category: ${category}. 
+            The current top system recommendation is: "${topRecommendationText.trim()}". 
+            The system also showed a list of other suitable crops with details like yield, planting times, and irrigation needs.
+            
+            Based on the user's question, respond in a concise and professional tone. If the question is about the site/app (like "Who created this?" or "What is ISPSC?"), answer that. If the question is about one of the ${data.cropCategories.length} categories (e.g., 'What are Oil Crops?'), provide an overview of that category in Egypt. If the question is about a specific recommended crop, provide planting tips or elaborate on its yield or irrigation. Respond exclusively in the language of the user's question (${currentLang === 'ar' ? 'Arabic' : 'English'}).`;
+            
+            const userQuery = message;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                tools: [{ "google_search": {} }],
+                systemInstruction: {
+                    parts: [{ text: systemPrompt }]
+                },
+            };
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const loadingIndicator = appendMessage(currentLang === 'en' ? '...Typing' : '...جاري الكتابة', 'bot', true);
+
+            let botResponse = currentLang === 'en' ? "Sorry, I couldn't get a response. Please try again later or check your internet connection." : "عذراً، لم أتمكن من الحصول على رد. يرجى المحاولة مرة أخرى لاحقاً أو التحقق من اتصالك بالإنترنت.";
+            let sources = [];
+
+            const maxRetries = 5;
+            for (let attempt = 0; attempt < maxRetries; attempt++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    const candidate = result.candidates?.[0];
+
+                    if (candidate && candidate.content?.parts?.[0]?.text) {
+                        botResponse = candidate.content.parts[0].text;
+                        
+                        const groundingMetadata = candidate.groundingMetadata;
+                        if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                            sources = groundingMetadata.groundingAttributions
+                                .map(attribution => ({
+                                    uri: attribution.web?.uri,
+                                    title: attribution.web?.title,
+                                }))
+                                .filter(source => source.uri && source.title);
+                        }
+                        break; 
+                    } else {
+                        throw new Error("Invalid response structure from API.");
+                    }
+                } catch (error) {
+                    console.error(`Attempt ${attempt + 1} failed:`, error);
+                    if (attempt === maxRetries - 1) {
+                        break; 
+                    }
+                    const delay = Math.pow(2, attempt) * 1000;
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+            }
+
+            loadingIndicator.remove();
+            appendMessage(botResponse, 'bot', false, sources);
+            chatSendBtn.disabled = false;
+            chatInput.disabled = false;
+        }
+
+        // Function to append message
+        function appendMessage(text, sender, isLoading = false, sources = []) {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = `flex ${sender === 'user' ? 'justify-end' : 'justify-start'}`;
+
+            const bubble = document.createElement('div');
+            const bubbleClass = sender === 'user' ? 'bg-user-bubble dark:bg-blue-900 rounded-tr-none' : 'bg-bot-bubble dark:bg-gray-700 rounded-tl-none';
+            
+            bubble.className = `max-w-xs p-3 rounded-xl shadow-md text-sm ${bubbleClass} transition duration-300`;
+            bubble.textContent = text;
+
+            if (isLoading) {
+                bubble.classList.add('animate-pulse-slow');
+            } else {
+                bubble.classList.remove('animate-pulse-slow');
+                if (sources.length > 0) {
+                    const sourcesDiv = document.createElement('div');
+                    sourcesDiv.className = 'mt-2 pt-2 border-t border-gray-300 dark:border-gray-600 text-xs text-gray-500 dark:text-gray-400';
+                    sourcesDiv.innerHTML = `
+                        <strong>${currentLang === 'en' ? 'Sources:' : 'المصادر:'}</strong>
+                        <ul class="list-disc ${currentLang === 'ar' ? 'pr-4' : 'pl-4'} mt-1 space-y-0.5">
+                            ${sources.slice(0, 3).map(s => `<li><a href="${s.uri}" target="_blank" class="hover:underline text-primary/80 dark:text-secondary">${s.title}</a></li>`).join('')}
+                        </ul>
+                    `;
+                    bubble.appendChild(sourcesDiv);
+                }
+            }
+
+            messageContainer.appendChild(bubble);
+            chatMessages.appendChild(messageContainer);
+
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            return messageContainer;
+        }
+
+
+        // --- Event Listeners and Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Initialize Theme
+            initializeTheme();
+
+            // 2. Initialize language & populate selects
+            initializeLanguage(); 
+            
+            // 3. Restore form inputs if available (for all 6 fields)
+            feddanInput.value = localStorage.getItem('feddanInput') || '1';
+
+            // 4. Set Initial View and history
+            navigateTo('landingView');
+            viewHistory = ['landingView'];
+            updateHeaderButtons(); // Set initial login/logout state
+
+            // 5. Hook up back button listener
+            backButton.addEventListener('click', goBack);
+
+            // 6. Hook up language toggle button
+            langToggleButton.addEventListener('click', toggleLanguage);
+
+            // 7. Hook up event listeners to all 6 input fields
+            const recommendationInputs = [govSelect, monthSelect, feddanInput, landTypeSelect, irrigationSelect, categorySelect];
+            recommendationInputs.forEach(input => {
+                if (input) {
+                    input.addEventListener('change', calculateRecommendations);
+                    if(input.type === 'number') {
+                        input.addEventListener('input', calculateRecommendations);
+                    }
+                }
+            });
+
+            // 8. Hook up Chatbot Event Listeners
+            chatSendBtn.addEventListener('click', sendMessage);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+
+            // 9. Enable chat input after DOM load
+            chatInput.disabled = false;
+            chatSendBtn.disabled = false;
+            
+            // 10. Hook up Contact Developers link (REMOVED)
+            // const contactDevelopers = document.getElementById('contactDevelopers');
+            // const developerInfo = document.getElementById('developerInfo');
+            // if (contactDevelopers && developerInfo) {
+            //     contactDevelopers.addEventListener('click', (e) => {
+            //         e.preventDefault();
+            //         developerInfo.classList.toggle('hidden');
+            //         const newTextKey = developerInfo.classList.contains('hidden') ? 'contactFeedback' : 'hideInfo';
+            //         contactDevelopers.textContent = translations[currentLang][newTextKey];
+            //         contactDevelopers.setAttribute('data-translate-key', newTextKey);
+            //     });
+            // }
+
+            // 11. NEW: Hook up Theme and Auth Listeners
+            themeToggle.addEventListener('click', toggleTheme);
+            loginButton.addEventListener('click', () => navigateTo('loginView'));
+            logoutButton.addEventListener('click', handleLogout);
+            loginForm.addEventListener('submit', handleLogin);
+        });
+    </script>
+</body>
+</html>
